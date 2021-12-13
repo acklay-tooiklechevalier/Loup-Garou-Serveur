@@ -17,7 +17,7 @@ dependencies {
 }
 
 application {
-    getMainClass().set('iut.acklay-tooiklechevalier.Serveur')
+    getMainClass().set('iut.acklaytooiklechevalier.Serveur')
 }
 
 test {
