@@ -3,25 +3,25 @@ package iut.acklaytooiklechevalier;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.UUID;
 
 public class Client {
 
 	private static int nbClient = 0;
 	private final int num;
-	private final String id; // en vue de creation d'une BDD pour les stats
+	//private final String id; // en vue de creation d'une BDD pour les stats
 	private String pseudo;
 	private Role role;
 	private final BufferedReader in ;
 	private final PrintWriter out;
 
+	private Client votePerso;
 	private boolean vivant ;
 	private boolean aJouer ;
 
 	public Client(BufferedReader in, PrintWriter out) {
 		this.in = in ;
 		this.out = out;
-		id = UUID.randomUUID().toString();
+		//id = UUID.randomUUID().toString();
 		num = ++nbClient;
 		pseudo = "";
 		try {
@@ -31,16 +31,19 @@ public class Client {
 			e.printStackTrace();
 		}
 		role = null;
-		//vivant = true;
+		votePerso = null;
+		vivant = true;
 	}
 
 	public String getPseudo() {
 		return pseudo;
 	}
 
+	/*
 	public String getId() {
 		return id;
 	}
+	*/
 
 	public int getNum() {
 		return num;
@@ -71,6 +74,14 @@ public class Client {
 
 	public boolean getAJouer() {
 		return aJouer;
+	}
+
+	public void setVotePerso(Client votePerso) {
+		this.votePerso = votePerso;
+	}
+
+	public Client getVotePerso() {
+		return votePerso;
 	}
 
 	public void setaJouer(boolean aJouer) {

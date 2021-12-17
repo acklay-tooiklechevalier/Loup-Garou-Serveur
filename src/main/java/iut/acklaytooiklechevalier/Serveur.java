@@ -16,9 +16,11 @@ public class Serveur {
 	private final Scanner sc = new Scanner(System.in);
 
 	private static final int nbPlayerRequired = 8;
-	// TODO : si le temps le permet
-	// private static final int minPlayer = 6;
-	// private static final int maxPlayer = 15;
+	/*
+	 TODO : si le temps le permet
+	 private static final int minPlayer = 6;
+	 private static final int maxPlayer = 15;
+	*/
 	private final ServerSocket serveurSocket;
 
 	private Metier metier;
@@ -52,22 +54,17 @@ public class Serveur {
 			if ( client.size() == nbPlayerRequired ){
 				Timer temp = new Timer();
 				temp.schedule(new TimerTask() {
-
 					@Override
 					public void run() {
 						metier = new Metier();
 					}
-
 				}, 1000L);
 			}
-			
 		}
-
 		serveurSocket.close();
 	} 
 
 	public void renvoi(String msg, Client outClient) {
-
 		PrintWriter out;
 
 		if (metier == null) {
@@ -77,14 +74,22 @@ public class Serveur {
 				out.flush();
 			}
 		} else {
-			if (metier.getDay() || metier.getDay() == null) {
+			if (metier.getState() == 1 && outClient.getVivant()) {
 				for (Client client : client) {
 					out = client.getOut();
 					out.println(outClient.getNum() + " " + outClient.getPseudo() + " : " + msg);
 					out.flush();
 				}
+			} else if (!outClient.getVivant()) {
+				for (Client client : client) {
+					if (!client.getVivant()) {
+						out = client.getOut();
+						out.println(outClient.getNum() + " " + outClient.getPseudo() + " : " + msg);
+						out.flush();
+					}
+				}
 			} else {
-				if (!metier.getIsSorciereVote()) { // tour des loup
+				if (metier.getState() == 2) { // tour des loup
 					for (Client client : client) {
 						if (outClient.getRole() == Role.LOUP_GAROU && client.getRole() == Role.LOUP_GAROU) {
 							out = client.getOut();
@@ -153,9 +158,7 @@ public class Serveur {
 					// tant que le client est connecté
 					while (msg != null) {
 						System.out.println(cli.getNum() + " " + cli.getPseudo() + " : " + msg);
-						if (metier != null && metier.receptionInformation(msg, cli))
-							envoi("Vous avez voté pour " + msg.split(" ")[1], cli);
-						else
+						if (metier != null && !metier.receptionInformation(msg, cli))
 							renvoi(msg ,cli);
 						msg = cli.getIn().readLine();
 					}
