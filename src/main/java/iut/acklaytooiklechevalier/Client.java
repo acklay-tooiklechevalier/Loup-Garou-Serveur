@@ -7,7 +7,7 @@ import java.io.PrintWriter;
 public class Client {
 
 	private static int nbClient = 0;
-	private final int num;
+	private int num;
 	//private final String id; // en vue de creation d'une BDD pour les stats
 	private String pseudo;
 	private Role role;
@@ -44,6 +44,14 @@ public class Client {
 		return id;
 	}
 	*/
+
+	public void setNum(int num) {
+		this.num = num;
+	}
+
+	public static void setNbClient(int nbClient) {
+		Client.nbClient = nbClient;
+	}
 
 	public int getNum() {
 		return num;
@@ -86,5 +94,10 @@ public class Client {
 
 	public void setaJouer(boolean aJouer) {
 		this.aJouer = aJouer;
+	}
+
+	@Override
+	public String toString() {
+		return num + " " + pseudo;
 	}
 }

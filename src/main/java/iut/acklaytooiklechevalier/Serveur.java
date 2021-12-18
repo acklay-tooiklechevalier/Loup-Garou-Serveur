@@ -43,10 +43,10 @@ public class Serveur {
 
 			Client cli = new Client(in, out);
 			
-			System.out.println("[+] " + cli.getNum() + " " + cli.getPseudo());
+			System.out.println("[+] " + cli);
 			for (Client c : client) {
 				PrintWriter o = c.getOut();
-				o.println("[+] " + cli.getNum() + " " + cli.getPseudo());
+				o.println("[+] " + cli);
 				o.flush();
 			}
 			client.add(cli);
@@ -70,21 +70,21 @@ public class Serveur {
 		if (metier == null) {
 			for (Client client : client) {
 				out = client.getOut();
-				out.println(outClient.getNum() + " " + outClient.getPseudo() + " : " + msg);
+				out.println(outClient + " : " + msg);
 				out.flush();
 			}
 		} else {
 			if (metier.getState() == 1 && outClient.getVivant()) {
 				for (Client client : client) {
 					out = client.getOut();
-					out.println(outClient.getNum() + " " + outClient.getPseudo() + " : " + msg);
+					out.println(outClient + " : " + msg);
 					out.flush();
 				}
 			} else if (!outClient.getVivant()) {
 				for (Client client : client) {
 					if (!client.getVivant()) {
 						out = client.getOut();
-						out.println(outClient.getNum() + " " + outClient.getPseudo() + " : " + msg);
+						out.println(outClient + " : " + msg);
 						out.flush();
 					}
 				}
@@ -93,7 +93,7 @@ public class Serveur {
 					for (Client client : client) {
 						if (outClient.getRole() == Role.LOUP_GAROU && client.getRole() == Role.LOUP_GAROU) {
 							out = client.getOut();
-							out.println(outClient.getNum() + " " + outClient.getPseudo() + " : " + msg);
+							out.println(outClient + " : " + msg);
 							out.flush();
 						} else if (client == outClient){
 							out = client.getOut();
@@ -105,7 +105,7 @@ public class Serveur {
 					for (Client client : client) {
 						if (outClient.getRole() == Role.SORCIERE && client.getRole() == Role.SORCIERE) {
 							out = client.getOut();
-							out.println(outClient.getNum() + " " + outClient.getPseudo() + " : " + msg);
+							out.println(outClient + " : " + msg);
 							out.flush();
 						} else if (client == outClient) {
 							out = client.getOut();
@@ -157,22 +157,36 @@ public class Serveur {
 					msg = cli.getIn().readLine();
 					// tant que le client est connecté
 					while (msg != null) {
-						System.out.println(cli.getNum() + " " + cli.getPseudo() + " : " + msg);
-						if (metier != null && !metier.receptionInformation(msg, cli))
-							renvoi(msg ,cli);
+						System.out.println(cli + " : " + msg);
+						if (metier != null) {
+							if(!metier.receptionInformation(msg, cli))
+								renvoi(msg, cli);
+						} else {
+							renvoi(msg, cli);
+						}
 						msg = cli.getIn().readLine();
 					}
 					// sortir de la boucle si le client a déconecté
-					System.out.println("[-] " + cli.getNum() + " " + cli.getPseudo());
-					for (Client c : client) {
-						PrintWriter o = c.getOut();
-						o.println("[-] " + cli.getNum() + " " + cli.getPseudo());
-						o.flush();
+					if (metier != null) {
+						for (Client c : metier.getClientEnJeu()) {
+							PrintWriter o = c.getOut();
+							o.println("[-] " + cli);
+							o.flush();
+						}
+						metier.removeClient(cli);
 					}
+					else {
+						for (Client c : client) {
+							PrintWriter o = c.getOut();
+							o.println("[-] " + cli);
+							o.flush();
+						}
+						client.remove(cli);
+					}
+					System.out.println("[-] " + cli);
 					// fermer le flux et la session socket
 					cli.getOut().close();
 					cli.getIn().close();
-					client.remove(cli);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
